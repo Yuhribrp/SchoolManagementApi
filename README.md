@@ -1,6 +1,6 @@
 # School Management API
 
-Welcome to the School Management API! This API provides a robust solution for managing schools and students. It is designed using modern technologies to offer a flexible and efficient way to handle school-related data.
+Welcome to the School Management API! This API provides a robust solution for managing schools and students. It is designed using technologies to offer a flexible and efficient way to handle school-related data.
 
 ## Technologies
 
