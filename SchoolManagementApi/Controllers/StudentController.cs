@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Services;
 
 namespace SchoolManagementApi.Controllers {
-    //[EnableCors("AllowAll")]
     public class StudentController : ODataController {
         private readonly StudentService _studentService;
 
@@ -20,25 +19,17 @@ namespace SchoolManagementApi.Controllers {
             return Ok(_studentService.GetAll()); 
         }
 
-        [HttpGet]
-        [Route("[controller]/{id}")]
-        [Route("[controller]({id})")]
-        public ActionResult GetById(int id) {
+        [HttpGet("[controller]/{id}")]
+        public ActionResult GetById([FromODataUri] int id) {
             var result = _studentService.GetById(id);
             if (result.Failure) return BadRequest(result.Error);
 
             return Ok(result.Value);
         }
 
-        [HttpGet]
-        [Route("School/{schoolId}/Students")]
-        public ActionResult GetStudentsBySchoolId(int schoolId) {
-            return Ok(_studentService.GetStudentsBySchoolId(schoolId));
-        }
-
-        [HttpPost]
-        public ActionResult Post(Student student) {
-            if (student == null) return BadRequest();
+        [HttpPost("[controller]/create")]
+        public ActionResult Post([FromBody] Student student) {
+            if (student == null) return BadRequest("Student object is null");
 
             var result = _studentService.Create(student);
             if (result.Failure) return BadRequest(result.Error);
@@ -48,11 +39,9 @@ namespace SchoolManagementApi.Controllers {
             return Created($"{Request.Path}/{student.Id}", student);
         }
 
-        [HttpPut]
-        [Route("[controller]/{id}")]
-        [Route("[controller]({id})")]
-        public ActionResult Put(Student updatedStudent, int id) {
-            if (updatedStudent == null) return BadRequest();
+        [HttpPut("[controller]/update/{id}")]
+        public ActionResult Put([FromODataUri] int id, [FromBody] Student updatedStudent) {
+            if (updatedStudent == null) return BadRequest("Student object is null");
 
             updatedStudent.Id = id;
             var result = _studentService.Update(updatedStudent);
@@ -61,10 +50,8 @@ namespace SchoolManagementApi.Controllers {
             return Ok(result.Value);
         }
 
-        [HttpDelete]
-        [Route("[controller]/{id}")]
-        [Route("[controller]({id})")]
-        public ActionResult Delete(int id) {
+        [HttpDelete("[controller]/delete/{id}")]
+        public ActionResult Delete([FromODataUri] int id) {
             var result = _studentService.RemoveById(id);
             if (result.Failure) return BadRequest(result.Error);
 
